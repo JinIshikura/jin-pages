@@ -121,6 +121,18 @@ h3.sec span{background:#fff;border-radius:999px;padding:2px 14px}
 .dcard{background:rgba(255,255,255,.93);border-radius:12px;border-left:none;padding:6px 12px;box-shadow:inset 3px 0 0 #d9b99a}
 footer p{background:rgba(255,255,255,.92);border-radius:14px;padding:12px 14px}
 @media(prefers-reduced-motion:reduce){.speed{display:none}.bgfx svg{transform:none;transition:none}}
+.detail{margin-top:12px;padding:12px 14px;background:#fff8f1;border:1px solid #f1dcc8;border-radius:14px}
+.detail h4{margin:10px 0 4px;font-size:15px;font-weight:900;color:var(--red)}
+.detail h4:first-child{margin-top:0}
+.detail ul{margin:0;padding-left:1.2em;font-size:15px}
+.detail dl{margin:0;display:grid;gap:6px;font-size:15px}
+.detail dl div{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.detail dt{color:var(--sub);font-weight:700}
+.detail dd{margin:0}
+.detail .slinks{margin-top:12px}
+.here{display:inline-block;font-size:12px;font-weight:900;color:#fff;background:#2f7d4f;border-radius:6px;padding:1px 8px}
+.toast{position:fixed;left:50%;top:14px;z-index:20;transform:translate(-50%,-20px);opacity:0;background:#2f7d4f;color:#fff;font-weight:900;font-size:14px;border-radius:999px;padding:8px 16px;box-shadow:0 4px 12px rgba(0,0,0,.18);transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
@@ -142,6 +154,7 @@ footer p{background:rgba(255,255,255,.92);border-radius:14px;padding:12px 14px}
 </main>
 <footer><p>地図の道のりはイメージです。Googleマップでは「経路オプション」で「有料道路を使用しない」をオンにしてください（比叡山ドライブウェイは有料なので、最後の区間だけオフに）。時間は渋滞なしの目安です。</p></footer>
 </div>
+<div class="toast" id="toast" role="status"></div>
 <div class="mbub" id="mbub" aria-live="polite"></div>
 <button class="mini" id="mini" type="button" aria-label="地図を大きく表示"><svg id="miniSvg" aria-hidden="true"></svg><span>地図</span></button>
 <div class="msheet" id="msheet" hidden role="dialog" aria-modal="true" aria-label="ルート地図"><div class="mpanel"><button class="mclose" type="button" aria-label="閉じる">×</button><div class="fig"><svg id="bigSvg" role="img" aria-label="ルート地図"></svg></div><div class="mapbar"><span>いまの位置は赤い車</span><a class="btn allr" href="#" target="_blank" rel="noopener">全ルートをGoogleマップで</a></div></div></div>
@@ -381,6 +394,22 @@ const velLoop=()=>{const now=performance.now(),dt=Math.max(16,now-lastT),dy=Math
  if(vel>0.005)requestAnimationFrame(velLoop);else{vel=0;lastY=scrollY;document.documentElement.style.setProperty("--v","0");speedEl.classList.remove("go");velRun=false;}};
 if(!reduce)addEventListener("scroll",()=>{sceneByScroll();if(!velRun){velRun=true;lastT=performance.now()-16;requestAnimationFrame(velLoop);}},{passive:true});
 else addEventListener("scroll",sceneByScroll,{passive:true});
+
+/* on open: if we are near a stop, jump to it and show its details */
+const GEO={hiyoshi:[35.0716,135.8622],lunch:[35.0716,135.8622],namiki:[35.4712,136.037],cafe:[35.4718,136.0366],shira:[35.2745,136.011],yume:[35.0514,135.8393],dinner:[35.046,135.786]};
+const distKm=(a,b)=>{const R=6371,t=Math.PI/180,dLa=(b[0]-a[0])*t,dLo=(b[1]-a[1])*t,x=Math.sin(dLa/2)**2+Math.cos(a[0]*t)*Math.cos(b[0]*t)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(x));};
+const detailHtml=k=>{const d=INFO[k];if(!d)return "";return `<div class="detail"><h4>${d.h?d.h[0]:"楽しみ方"}</h4><ul>${d.enjoy.map(x=>`<li>${x}</li>`).join("")}</ul><h4>${d.h?d.h[1]:"ポイント"}</h4><ul>${d.tips.map(x=>`<li>${x}</li>`).join("")}</ul><h4>基本情報</h4><dl>${d.info.map(r=>`<div><dt>${r[0]}</dt><dd>${r[1]}</dd></div>`).join("")}</dl>${d.links.length?`<div class="slinks">${d.links.map(l=>`<a class="btn" href="${l.u}" target="_blank" rel="noopener">${l.t}<span aria-hidden="true">↗</span></a>`).join("")}</div>`:""}</div>`;};
+const showNear=(i,km)=>{const li=tl.querySelector(`.stop[data-i="${i}"]`);if(!li)return;const s=T[i],card=li.querySelector(".card");
+ if(!card.querySelector(".detail")){const btns=card.querySelector(".btns");btns.insertAdjacentHTML("beforebegin",detailHtml(s.info));}
+ const hd=card.querySelector(".head");if(hd&&!hd.querySelector(".here"))hd.insertAdjacentHTML("beforeend",'<span class="here">現在地の近く</span>');
+ const toast=document.getElementById("toast");toast.textContent=`${s.name}の近くにいます（約${km<1?Math.round(km*1000)+"m":km.toFixed(1)+"km"}）`;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),4000);
+ setTimeout(()=>scrollTo({top:li.getBoundingClientRect().top+scrollY-64,behavior:reduce?"auto":"smooth"}),300);};
+if("geolocation" in navigator){navigator.geolocation.getCurrentPosition(pos=>{const me=[pos.coords.latitude,pos.coords.longitude];
+ const near=T.map((s,i)=>({s,i})).filter(o=>o.s.info&&GEO[o.s.info]).map(o=>({...o,km:distKm(me,GEO[o.s.info])})).filter(o=>o.km<=1.5);
+ if(!near.length)return;const best=Math.min(...near.map(o=>o.km));let group=near.filter(o=>Math.abs(o.km-best)<0.05);
+ const d=new Date(),today=d.getFullYear()===2026&&d.getMonth()===10&&d.getDate()===22,now=d.getHours()*60+d.getMinutes();
+ let pick=group[0];if(today){const past=group.filter(o=>o.s.m&&o.s.m[0]<=now);if(past.length)pick=past[past.length-1];}
+ showNear(pick.i,pick.km);},()=>{},{enableHighAccuracy:false,timeout:10000,maximumAge:120000});}
 const mark=()=>{const d=new Date();tl.querySelectorAll(".now").forEach(e=>e.classList.remove("now"));if(!(d.getFullYear()===2026&&d.getMonth()===10&&d.getDate()===22))return false;const n=d.getHours()*60+d.getMinutes();const i=T.findIndex(s=>s.m&&n>=s.m[0]&&n<s.m[1]);if(i>=0){tl.querySelector(`[data-i="${i}"]`).classList.add("now");return T[i];}return false;};
 mark();setInterval(mark,60000);
 
