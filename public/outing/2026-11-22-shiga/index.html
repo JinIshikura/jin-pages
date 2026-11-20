@@ -151,8 +151,8 @@ footer p{background:rgba(255,255,255,.92);border-radius:14px;padding:12px 14px}
 <main>
 <ol class="tl" id="tl"></ol>
 <section class="notes">
-<div class="note"><h3>遅れたら削る順番</h3><ol><li>白鬚神社（車窓から見るだけに）</li><li>比叡山の山頂（夢見が丘だけ）</li><li>並木カフェ（散策を優先）</li></ol></div>
-<div class="note"><h3>持ち物・準備</h3><ul><li>上着とブランケット（夜の比叡山は冷えます）</li><li>歩きやすい靴（日吉大社の参道は坂道）</li><li>現金（ドライブウェイ通行料 860〜1700円）</li><li>スマホの充電器</li></ul></div>
+<div class="note"><h3>遅れたら削る順番</h3><ol><li>坂本の町歩き（日吉大社へ直行）</li><li>白鬚神社（車窓から見るだけに）</li><li>比叡山の山頂（夢見が丘だけ）</li></ol></div>
+<div class="note"><h3>持ち物・準備</h3><ul><li>上着とブランケット（夜の比叡山は冷えます）</li><li>歩きやすい靴（日吉大社の参道は坂道）</li><li>ETCカード（茨木IC〜京都東ICの高速代）</li><li>現金（ドライブウェイ通行料 860〜1700円）</li><li>スマホの充電器</li></ul></div>
 </section>
 </main>
 <footer><p>地図の道のりはイメージです。Googleマップでは「経路オプション」で「有料道路を使用しない」をオンにしてください（比叡山ドライブウェイは有料なので、最後の区間だけオフに）。時間は渋滞なしの目安です。</p></footer>
@@ -169,6 +169,11 @@ hiyoshi:{t:"日吉大社",sub:"約3000本のモミジに包まれる、比叡山
  tips:["参道は坂が多いので歩きやすい靴で","時間があれば近くの旧竹林院（庭園・入園330円）にも","駐車場は約50台。11月は有料（2時間1,000円）との情報あり"],
  info:[["拝観","9:00〜16:00"],["拝観料","大人500円"],["駐車場","約50台"]],
  links:[{t:"もみじ祭の紹介記事（たびびと＆旅mag）",u:"https://tabi-mag.jp/hiyoshitaisha-momiji/"}]},
+sakamoto:{t:"坂本の町歩き",sub:"延暦寺・日吉大社の門前町",h:["楽しみ方","ポイント"],
+ enjoy:["石積みの石垣が続く門前町の町並みを散策","庭園の美しい旧竹林院に立ち寄るのもおすすめ","名物のおそばを軽くつまむのも◎"],
+ tips:["日吉大社は12〜15時がいちばん混むので、先に町歩きで時間調整","車は日吉大社周辺の駐車場やコインパーキングへ"],
+ info:[["エリア","大津市坂本（日吉大社の参道周辺）"]],
+ links:[]},
 lunch:{t:"坂本でランチ",sub:"延暦寺・日吉大社の門前町",
  enjoy:["石積みの町並みが残る門前町。散策しながらお店へ","名物はおそば。日吉大社の近くには手打ちそばの老舗「鶴喜そば」も"],
  tips:["三連休のお昼は混みやすいので、11:45〜12:00には入るのがおすすめ","食べたら12:50ごろ出発でメタセコイアへ"],
@@ -181,7 +186,7 @@ dinner:{t:"夕食の候補",sub:"山中越を下りた一乗寺周辺（帰り�
  links:[{t:"高安をマップで",u:"https://www.google.com/maps/search/?api=1&query=中華そば 高安 一乗寺"},{t:"珍遊をマップで",u:"https://www.google.com/maps/search/?api=1&query=珍遊 一乗寺本店"},{t:"グリルにんじんをマップで",u:"https://www.google.com/maps/search/?api=1&query=グリルにんじん 京都"},{t:"IN THE GREENをマップで",u:"https://www.google.com/maps/search/?api=1&query=IN THE GREEN 京都 下鴨"}]},
 cafe:{t:"並木カフェ メタセコイア",sub:"マキノピックランド内、並木の目の前",
  enjoy:["ガラス張りの店内から、メタセコイア並木を一望できる","窓際の席が取れたらラッキー"],
- tips:["メニュー例：モンブランクロッフル、季節のランチボックス（季節で変わります）","散策のあとのおやつに。ラストオーダー16:30ごろなので、16時前には入るのが安心"],
+ tips:["メニュー例：モンブランクロッフル、季節のランチボックス（季節で変わります）","お昼どきは混みやすいので、11:45ごろの早めの入店がおすすめ"],
  info:[["営業","10:30〜16:30ごろ（L.O.）"],["定休日","水曜（22日は日曜なので営業）"],["場所","マキノピックランド内"]],
  links:[{t:"紹介記事（ウォーカープラス）",u:"https://koyo.walkerplus.com/topics/article/1301080/"}]},
 namiki:{t:"メタセコイア並木",sub:"約2.4kmに約500本が続く並木道",
@@ -250,30 +255,30 @@ const setScene=k=>{if(k===curSc||k<0)return;curSc=k;scEls.forEach((e,i)=>e.class
 setScene(0);
 const G="https://www.google.com/maps/",E=encodeURIComponent;
 const P=[
-{k:"S",n:"ファミマ 千里丘",ll:[135.5472,34.7902],q:"ファミリーマート 摂津千里丘二丁目店",id:"ChIJD71jcBTjAGARpScIyX-La8M",side:1},
-{k:"1",n:"日吉大社",ll:[135.885,35.072],q:"日吉大社",id:"ChIJWcXMHlgKAWARsMQ0TN1UF4E",side:1},
-{k:"2",n:"メタセコイア並木",ll:[136.037,35.471],q:"マキノピックランド",id:"ChIJ-109_zftAWARJpJftXBxJ4Y",side:-1},
-{k:"3",n:"白鬚神社",ll:[136.011,35.275],q:"白鬚神社 高島市",id:"ChIJ_6TFyR-MA2ARy33QFlMAor0",side:1},
-{k:"4",n:"夢見が丘",ll:[135.825,35.04],q:"夢見が丘 比叡山ドライブウェイ",id:"ChIJvTGrP80LAWARm6lQkWcgCHw",side:-1}
+{k:"S",n:"ファミマ 千里丘",ll:[135.5472,34.7902],q:"ファミリーマート 摂津千里丘二丁目店",id:"ChIJD71jcBTjAGARpScIyX-La8M",side:1,ic:0,sc:0},
+{k:"1",n:"メタセコイア並木",ll:[136.037,35.471],q:"マキノピックランド",id:"ChIJ-109_zftAWARJpJftXBxJ4Y",side:-1,ic:2,sc:2},
+{k:"2",n:"日吉大社",ll:[135.885,35.072],q:"日吉大社",id:"ChIJWcXMHlgKAWARsMQ0TN1UF4E",side:1,ic:1,sc:1},
+{k:"3",n:"白鬚神社",ll:[136.011,35.275],q:"白鬚神社 高島市",id:"ChIJ_6TFyR-MA2ARy33QFlMAor0",side:1,ic:3,sc:3},
+{k:"4",n:"夢見が丘",ll:[135.825,35.04],q:"夢見が丘 比叡山ドライブウェイ",id:"ChIJvTGrP80LAWARm6lQkWcgCHw",side:-1,ic:4,sc:4}
 ];
 const L=[
-{a:0,b:1,t:"約1時間40分",v:"国道171号 → 京都市内 → 国道1号 → 西大津BP（無料）",pts:[[135.5472,34.7902],[135.63,34.83],[135.7,34.88],[135.77,34.93],[135.83,34.97],[135.865,35.02],[135.885,35.072]]},
-{a:1,b:2,t:"約1時間20分",v:"湖西道路（無料）→ 志賀BP → 国道161号",pts:[[135.885,35.072],[135.905,35.12],[135.935,35.17],[135.965,35.23],[135.99,35.29],[136.015,35.34],[136.01,35.4],[136.02,35.445],[136.037,35.471]]},
-{a:2,b:3,t:"約35分",v:"国道161号を南へ",pts:[[136.037,35.471],[136.03,35.43],[136.025,35.38],[136.035,35.33],[136.011,35.275]]},
+{a:0,b:1,t:"約1時間45分",v:"茨木IC → 名神（有料）→ 京都東IC → 西大津BP・湖西道路（無料）→ 国道161号",pts:[[135.5472,34.7902],[135.62,34.85],[135.7,34.91],[135.78,34.96],[135.835,34.995],[135.855,35.045],[135.89,35.105],[135.93,35.165],[135.965,35.23],[135.99,35.29],[136.015,35.34],[136.01,35.4],[136.02,35.445],[136.037,35.471]]},
+{a:1,b:2,t:"約1時間10分",v:"国道161号 → 湖西道路（無料）を南へ",pts:[[136.037,35.471],[136.035,35.43],[136.033,35.38],[136.04,35.33],[136.022,35.29],[135.985,35.235],[135.95,35.18],[135.92,35.125],[135.885,35.072]]},
+{a:2,b:3,t:"約45分",v:"湖西道路（無料）を北へ",pts:[[135.885,35.072],[135.9,35.11],[135.935,35.16],[135.97,35.215],[136.011,35.275]]},
 {a:3,b:4,t:"約50分",v:"湖西道路（無料）→ 山中越 → 田の谷峠ゲート",pts:[[136.011,35.275],[135.975,35.235],[135.93,35.18],[135.89,35.13],[135.855,35.095],[135.835,35.065],[135.825,35.04]]},
 {a:4,b:0,t:"約1時間30分",v:"山中越 → 京都市内 → 国道171号",home:1,pts:[[135.825,35.04],[135.79,35.02],[135.75,34.99],[135.69,34.93],[135.62,34.85],[135.5472,34.7902]]}
 ];
 const LAKE=[[136.08,35.53],[136.13,35.51],[136.18,35.5],[136.21,35.45],[136.27,35.4],[136.28,35.35],[136.245,35.29],[136.2,35.24],[136.11,35.18],[136.06,35.145],[136.0,35.12],[135.96,35.105],[135.94,35.09],[135.935,35.05],[135.92,35.01],[135.905,34.975],[135.885,34.99],[135.87,35.02],[135.885,35.06],[135.905,35.105],[135.93,35.15],[135.96,35.2],[135.995,35.245],[136.017,35.28],[136.05,35.33],[136.035,35.39],[136.055,35.43],[136.07,35.47]];
 const T=[
-{t:"9:00",p:0,name:"ファミリーマート 摂津千里丘二丁目店 出発",say:"しゅっぱーつ！安全運転でね",tag:"スタート",d:"高速は使わず、京都市内を抜けて坂本へ。"},
-{t:"",drive:0,say:"次は日吉大社。京都市内を抜けて約1時間40分",m:[540,640]},
-{t:"10:40",p:1,name:"日吉大社",say:"もみじのトンネルを歩こう",tag:"紅葉",info:"hiyoshi",d:"約3000本のモミジに包まれる古社。参道の「もみじロード」を散策。",li:["大宮橋から西本宮への参道がもみじのトンネルに","時間があれば近くの旧竹林院の庭園も"],m:[640,720]},
-{t:"12:00",p:1,name:"坂本でランチ",say:"お昼は坂本でおそば",tag:"ごはん",info:"lunch",d:"門前町・坂本の名物はおそば。",q:"大津市坂本 そば",m:[720,770]},
-{t:"12:50",drive:1,say:"湖西道路で北へ。約1時間20分のドライブ",m:[770,850]},
-{t:"14:10",p:2,name:"メタセコイア並木",say:"メタセコイア並木に到着！写真を撮ろう",tag:"散策",info:"namiki",d:"マキノピックランドの無料駐車場に停めて、ゆっくり散策。",li:["並木の途中の焼き芋屋「銀ちゃん」（開いていたら）","写真は歩道から。道路の真ん中には出ない"],m:[850,920]},
-{t:"15:20",p:2,name:"並木カフェ メタセコイア",say:"カフェでおやつタイム",tag:"カフェ",info:"cafe",d:"散策のあとは、窓から並木が見えるカフェでおやつ休憩。L.O.は16:30ごろ。",q:"並木カフェ メタセコイア",id:"ChIJpXBINsztAWARQK3moX22O3g",m:[920,965]},
-{t:"16:05",drive:2,say:"湖ぞいを南へ。夕暮れに間に合うかな",m:[965,1000]},
-{t:"16:40",p:3,name:"白鬚神社",say:"湖の鳥居と夕暮れ、間に合ったね",tag:"夕暮れ",info:"shira",d:"日の入り前後の湖と鳥居を。国道は渡らず、満車なら車窓から。",m:[1000,1015]},
+{t:"9:00",p:0,name:"ファミリーマート 摂津千里丘二丁目店 出発",say:"しゅっぱーつ！まずはメタセコイアへ",tag:"スタート",d:"茨木ICから名神で京都東ICへ。そこから先は無料の道で湖西へ。"},
+{t:"",drive:0,say:"11時前に着けば渋滞を避けられるよ",m:[540,645]},
+{t:"10:45",p:1,name:"メタセコイア並木",say:"空いているうちに並木を歩こう",tag:"散策",info:"namiki",d:"混み始める11時より前に到着。マキノピックランドの無料駐車場に停めて散策。",li:["並木の途中の焼き芋屋「銀ちゃん」（開いていたら）","写真は歩道から。道路の真ん中には出ない"],m:[645,705]},
+{t:"11:45",p:1,name:"並木カフェ メタセコイア",say:"ランチは並木の見えるカフェで",tag:"ランチ",info:"cafe",d:"窓から並木が見えるカフェで早めのランチ。",q:"並木カフェ メタセコイア",id:"ChIJpXBINsztAWARQK3moX22O3g",m:[705,750]},
+{t:"12:30",drive:1,say:"南へ戻るよ。南行きは流れやすい",m:[750,820]},
+{t:"13:40",p:2,name:"坂本の町歩き",say:"石積みの門前町をおさんぽ",tag:"散策",info:"sakamoto",d:"日吉大社が混む時間は、門前町の散策で時間調整。",q:"大津市坂本 旧竹林院",m:[820,870]},
+{t:"14:30",p:2,name:"日吉大社",say:"もみじのトンネルを歩こう",tag:"紅葉",info:"hiyoshi",d:"昼のピーク（12〜15時）が落ち着いてくる時間。参道の「もみじロード」を散策。",li:["大宮橋から西本宮への参道がもみじのトンネルに","時間があれば近くの旧竹林院の庭園も"],m:[870,950]},
+{t:"15:50",drive:2,say:"夕暮れの白鬚神社へ",m:[950,995]},
+{t:"16:35",p:3,name:"白鬚神社",say:"湖の鳥居と夕暮れ、間に合ったね",tag:"夕暮れ",info:"shira",d:"日の入り前後の湖と鳥居を。国道は渡らず、満車なら車窓から。",m:[995,1015]},
 {t:"16:55",drive:3,say:"いよいよ夜景へ。山道は安全運転で",m:[1015,1065]},
 {t:"17:45",p:4,name:"比叡山ドライブウェイ 夢見が丘",say:"ライトアップと夜景！上着を忘れずに",tag:"夜景",info:"yume",d:"紅葉ライトアップと琵琶湖・大津の夜景（日没〜21:00）。",li:["通行料：夢見が丘だけなら往復860円","余裕があれば山頂へ（往復1700円）"],m:[1065,1140]},
 {t:"19:00",p:4,name:"下山して夕食",say:"おなかすいたね。どこで食べる？",tag:"ごはん",info:"dinner",d:"山中越を下りた一乗寺周辺で。候補から当日選ぶ。",li:["中華そば 高安（ラーメン）","珍遊 一乗寺本店（ラーメン・24時まで）","グリルにんじん（洋食）","IN THE GREEN（イタリアン）"],q:"京都市左京区一乗寺",m:[1140,1230]},
@@ -328,7 +333,7 @@ const makeMap=(svg,mode)=>{
   const lb=pj([136.18,35.39]);
   const legs=L.map((l,i)=>`<path d="${smooth(l.pts.map(pj))}" fill="none" stroke="${l.home?"var(--sub)":"#d9b99a"}" stroke-width="${l.home?3:6}" stroke-linecap="round" stroke-linejoin="round" ${l.home?'stroke-dasharray="1 8"':""} data-l="${i}"/>`).join("");
   const done=L.map((l,i)=>`<path d="${smooth(l.pts.map(pj))}" fill="none" stroke="var(--red)" stroke-width="${l.home?3.5:6}" stroke-linecap="round" stroke-linejoin="round" data-d="${i}"/>`).join("");
-  const pins=P.map((p,i)=>{const [x,y]=pj(p.ll);return `<g class="pin" data-p="${i}" transform="translate(${x} ${y})"><g class="ico"><circle r="15" fill="#fff" stroke="var(--red)" stroke-width="2.5"/>${ICON[i]}</g><g transform="translate(11 -11)"><circle r="7.5" fill="var(--red)"/><text y="3.6" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">${p.k}</text></g>${fs?`<g class="lab" data-side="${p.side}"><rect rx="11" fill="#fff" stroke="var(--line)"/><text font-size="${fs}" font-weight="700" fill="var(--ink)">${p.n}</text></g>`:""}</g>`;}).join("");
+  const pins=P.map((p,i)=>{const [x,y]=pj(p.ll);return `<g class="pin" data-p="${i}" transform="translate(${x} ${y})"><g class="ico"><circle r="15" fill="#fff" stroke="var(--red)" stroke-width="2.5"/>${ICON[p.ic]}</g><g transform="translate(11 -11)"><circle r="7.5" fill="var(--red)"/><text y="3.6" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">${p.k}</text></g>${fs?`<g class="lab" data-side="${p.side}"><rect rx="11" fill="#fff" stroke="var(--line)"/><text font-size="${fs}" font-weight="700" fill="var(--ink)">${p.n}</text></g>`:""}</g>`;}).join("");
   svg.innerHTML=`<defs><linearGradient id="lk${mode}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--lake1)"/><stop offset="1" stop-color="var(--lake2)"/></linearGradient><pattern id="dt${mode}" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.3" fill="var(--hill)"/></pattern></defs><rect width="${W}" height="${H}" fill="var(--land)"/><rect width="${W}" height="${H}" fill="url(#dt${mode})" opacity=".6"/><g class="world">${hills}<path d="${lake}" fill="url(#lk${mode})" stroke="#fff" stroke-width="3" stroke-opacity=".8"/>${waves}${boat}${fs?`<text x="${lb[0]}" y="${lb[1]}" text-anchor="middle" font-size="${fs+3}" font-weight="900" fill="#fff" style="letter-spacing:.35em">琵琶湖</text>`:""}${legs}${done}${pins}<g class="me" style="display:none"><circle class="mepulse" r="16" fill="#2f7dd8" opacity=".2"/><circle r="7" fill="#2f7dd8" stroke="#fff" stroke-width="3"/></g><g class="car">${CAR}</g></g>${fs?`<g class="bub" opacity="0"><path fill="#fff" stroke="var(--red)" stroke-width="2"/><text font-size="${fs}" font-weight="900" fill="var(--ink)" text-anchor="middle"></text></g>`:""}`;
   svg.querySelectorAll(".lab").forEach(gl=>{const t=gl.querySelector("text"),r=gl.querySelector("rect"),bb=t.getBBox(),side=+gl.dataset.side,w=bb.width+18,h=fs+10;const x=side>0?22:-22-w;r.setAttribute("x",x);r.setAttribute("y",-h/2);r.setAttribute("width",w);r.setAttribute("height",h);t.setAttribute("x",x+9);t.setAttribute("y",fs*0.36);});
   M.world=svg.querySelector(".world");M.me=svg.querySelector(".me");M.car=svg.querySelector(".car");M.bub=svg.querySelector(".bub");M.pins=[...svg.querySelectorAll(".pin")];
@@ -385,7 +390,7 @@ const updateSay=()=>{if(!mini.classList.contains("show")){mbub.classList.remove(
 addEventListener("scroll",()=>requestAnimationFrame(updateSay),{passive:true});
 
 /* background scenes follow the item being read; scrolling adds speed */
-const scOf=s=>s.drive!==undefined?s.drive+1:(s.end||s.info==="dinner")?5:s.p;
+const scOf=s=>s.drive!==undefined?P[L[s.drive].b].sc:(s.end||s.info==="dinner")?5:P[s.p].sc;
 const sceneByScroll=()=>{const line=innerHeight*0.45;for(const li of tl.querySelectorAll(".stop")){const r=li.getBoundingClientRect();if(r.top<=line&&r.bottom>=line){setScene(scOf(T[+li.dataset.i]));return;}}};
 const speedEl=document.getElementById("speed");
 {let html="";const rr=rn(77);for(let i=0;i<16;i++)html+=`<i style="top:${(rr()*100).toFixed(1)}%;width:${(80+rr()*200).toFixed(0)}px;animation-delay:-${(rr()*0.55).toFixed(2)}s;animation-duration:${(0.35+rr()*0.35).toFixed(2)}s"></i>`;speedEl.innerHTML=html;}
@@ -398,7 +403,7 @@ if(!reduce)addEventListener("scroll",()=>{sceneByScroll();if(!velRun){velRun=tru
 else addEventListener("scroll",sceneByScroll,{passive:true});
 
 /* on open: if we are near a stop, jump to it and show its details */
-const GEO={hiyoshi:[35.0716,135.8622],lunch:[35.0716,135.8622],namiki:[35.4712,136.037],cafe:[35.4718,136.0366],shira:[35.2745,136.011],yume:[35.0514,135.8393],dinner:[35.046,135.786]};
+const GEO={hiyoshi:[35.0716,135.8622],sakamoto:[35.0716,135.8622],lunch:[35.0716,135.8622],namiki:[35.4712,136.037],cafe:[35.4718,136.0366],shira:[35.2745,136.011],yume:[35.0514,135.8393],dinner:[35.046,135.786]};
 const distKm=(a,b)=>{const R=6371,t=Math.PI/180,dLa=(b[0]-a[0])*t,dLo=(b[1]-a[1])*t,x=Math.sin(dLa/2)**2+Math.cos(a[0]*t)*Math.cos(b[0]*t)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(x));};
 const detailHtml=k=>{const d=INFO[k];if(!d)return "";return `<div class="detail"><h4>${d.h?d.h[0]:"楽しみ方"}</h4><ul>${d.enjoy.map(x=>`<li>${x}</li>`).join("")}</ul><h4>${d.h?d.h[1]:"ポイント"}</h4><ul>${d.tips.map(x=>`<li>${x}</li>`).join("")}</ul><h4>基本情報</h4><dl>${d.info.map(r=>`<div><dt>${r[0]}</dt><dd>${r[1]}</dd></div>`).join("")}</dl>${d.links.length?`<div class="slinks">${d.links.map(l=>`<a class="btn" href="${l.u}" target="_blank" rel="noopener">${l.t}<span aria-hidden="true">↗</span></a>`).join("")}</div>`:""}</div>`;};
 const showNear=(i,km)=>{const li=tl.querySelector(`.stop[data-i="${i}"]`);if(!li)return;const s=T[i],card=li.querySelector(".card");
