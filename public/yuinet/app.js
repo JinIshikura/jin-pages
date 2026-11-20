@@ -171,13 +171,15 @@
     let h = `<div class="ans">${aiHTML(res.answer)}</div>`;
     let refs = (res.refs || []).filter((id) => SEC[id]);
     if (!refs.length) refs = search(q, 2).filter((r) => r.sc >= THRESH).map((r) => r.s.id);
-    refs.slice(0, 3).forEach((rid, k) => {
+    refs = refs.slice(0, 3);
+    const stripAt = refs.findIndex((id) => SEC[id].figs.length);
+    refs.forEach((rid, k) => {
       const s = SEC[rid];
       const g = reg(s.figs.map((id) => ({ kind: "fig", id })), s.title);
       h += `<div class="ref"><div class="ref-h"><b>${esc(s.title)}</b>${badges(s)}</div>` +
-        (k === 0 ? figsHTML(s.figs, g) : "") +
+        (k === stripAt ? figsHTML(s.figs, g) : "") +
         `<div class="acts">` +
-        (k > 0 && s.figs.length ? `<button class="act" type="button" data-g-open="${g}">画面図を見る（${s.figs.length}枚）</button>` : "") +
+        (k !== stripAt && s.figs.length ? `<button class="act" type="button" data-g-open="${g}">画面図を見る（${s.figs.length}枚）</button>` : "") +
         `<button class="act" type="button" data-sec="${s.id}">マニュアルの説明を読む</button></div></div>`;
     });
     const next = (res.next || []).slice(0, 3);
