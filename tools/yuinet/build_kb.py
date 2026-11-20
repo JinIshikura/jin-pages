@@ -38,7 +38,7 @@ for s in secs_in:
     if sid not in cat_of:
         raise SystemExit(f"section {sid} has no category")
     item = {
-        "id": sid, "doc": s["doc"], "p": [s["page_start"], s["page_end"]],
+        "id": sid, "doc": s["doc"], "p": C.PAGES.get(sid, [s["page_start"], s["page_end"]]),
         "title": C.TITLES.get(sid, s["title"]), "crumb": s["crumb"],
         "cat": cat_of[sid], "kw": C.KEYWORDS.get(sid, ""), "paras": paras, "figs": s["figs"],
     }
