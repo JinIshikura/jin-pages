@@ -19,7 +19,7 @@
   const pageLabel = (s) => KB.docs[s.doc].name + " P." + s.p[0] + (s.p[1] !== s.p[0] ? "–" + s.p[1] : "");
   const pageKey = (doc, pg) => doc[0] + String(pg).padStart(2, "0");
   const circled = (n) => (n >= 1 && n <= 20 ? String.fromCharCode(0x2460 + n - 1) : String(n));
-  function scrollToEl(e) { requestAnimationFrame(() => e.scrollIntoView({ behavior: "smooth", block: "start" })); }
+  function scrollToEl(e) { setTimeout(() => e.scrollIntoView({ behavior: "smooth", block: "start" }), 30); }
 
   function iconHTML(id) {
     const ic = KB.icons[id];
