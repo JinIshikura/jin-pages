@@ -68,17 +68,16 @@ async function callClaude(env, messages, attempt) {
   const base = env.ANTHROPIC_BASE_URL || "https://api.anthropic.com";
   const payload = {
     model: env.MODEL || MODEL,
-    max_tokens: 1500,
+    max_tokens: 4000,
     system: [
       { type: "text", text: RULES },
       { type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } },
     ],
     messages,
   };
-  // first try: low effort without thinking (fast, cheap). second try: plain request.
+  // first try: medium effort (adaptive thinking keeps answers close to the manual). second try: plain request.
   if (attempt === 0) {
-    payload.output_config = { effort: "low" };
-    payload.thinking = { type: "disabled" };
+    payload.output_config = { effort: "medium" };
   }
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), 28000);
@@ -166,10 +165,10 @@ export async function onRequestPost({ request, env }) {
 
   const text = (data.content || []).filter((b) => b.type === "text").map((b) => b.text).join("\n");
   const pick = (tag) => {
-    const m = text.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`));
+    const m = text.match(new RegExp(`<${tag}>([\\s\\S]*?)(?:</${tag}>|<(?:answer|refs|next)>|$)`));
     return m ? m[1].trim() : "";
   };
-  let answer = pick("answer") || text.replace(/<\/?(answer|refs|next)>/g, "").trim();
+  let answer = pick("answer") || text.split(/<(?:refs|next)>/)[0].replace(/<\/?answer>/g, "").trim();
   answer = answer.replace(/\*\*/g, "").replace(/^#+\s*/gm, "").slice(0, 2000);
   const ids = new Set(KB.secs.map((s) => s.id));
   const refs = [...new Set((pick("refs").match(/[gd]\d{2}[a-h]/g) || []).filter((id) => ids.has(id)))].slice(0, 3);
