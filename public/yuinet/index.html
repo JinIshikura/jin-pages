@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light">
+<title>結ネット 使い方サポート｜健康村自治会</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%231565c0%22/%3E%3Ctext x=%2232%22 y=%2246%22 font-size=%2238%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22sans-serif%22 font-weight=%22bold%22%3E%E7%B5%90%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --blue:#1565c0;--blue-d:#0d4a94;--blue-l:#e8f1fc;--blue-m:#c9dcf4;
+  --ink:#1f2933;--sub:#56636f;--line:#dbe2ea;--bg:#f4f6f9;
+  --ok:#1b7f4b;--okbg:#e7f5ed;--warn:#8a5300;--warnbg:#fff3dc;
+  --w:760px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Noto Sans CJK JP","Yu Gothic UI",Meiryo,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+button{font:inherit;color:inherit;cursor:pointer}
+img{max-width:100%}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line)}
+.top-in{max-width:var(--w);margin:0 auto;display:flex;align-items:center;gap:10px;padding:10px 14px 9px}
+.logo{flex:0 0 38px;height:38px;border-radius:10px;background:var(--blue);color:#fff;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center}
+.ht{line-height:1.3;min-width:0}
+.ht b{display:block;font-size:17px}
+.ht span{font-size:13px;color:var(--sub)}
+.pill{margin-left:auto;flex:0 0 auto;border:2px solid var(--blue);color:var(--blue);background:#fff;border-radius:999px;padding:5px 14px;font-size:15px;font-weight:700;min-height:40px}
+
+/* chat log */
+#log{flex:1;width:100%;max-width:var(--w);margin:0 auto;padding:14px 12px 18px;display:flex;flex-direction:column;gap:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px 16px 14px}
+.card,.me{scroll-margin-top:72px}
+.me{align-self:flex-end;max-width:86%;background:var(--blue-l);border:1px solid var(--blue-m);border-radius:16px 16px 4px 16px;padding:9px 14px;white-space:pre-wrap;word-break:break-word}
+.card h2{font-size:18px;margin:0 0 4px;line-height:1.5}
+.card h3{font-size:18px;margin:0;line-height:1.5}
+.lead{margin:0 0 6px}
+.muted{color:var(--sub);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{border:2px solid var(--blue);color:var(--blue);background:#fff;border-radius:999px;padding:6px 14px;font-size:15.5px;font-weight:700;line-height:1.4;min-height:42px;text-align:left}
+.chip:active{background:var(--blue-l)}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.cat{background:var(--blue-l);border:0;border-radius:12px;padding:10px 12px;text-align:left;font-weight:700;color:var(--blue-d);font-size:15.5px;line-height:1.45;min-height:58px}
+.cat small{display:block;font-weight:400;color:var(--sub);font-size:13px}
+.sep{border:0;border-top:1px dashed var(--line);margin:14px 0 10px}
+.note-ai{font-size:13.5px;color:var(--sub);margin-top:10px}
+
+/* answer text */
+.ans{word-break:break-word}
+.ans p{margin:0 0 4px}
+.row{display:flex;gap:8px;margin:4px 0}
+.row .n{flex:0 0 auto;font-weight:800;color:var(--blue);min-width:1.3em}
+.row .t{flex:1;min-width:0}
+.ast{font-size:15px;color:var(--sub);background:#f6f8fa;border-radius:8px;padding:6px 10px;margin:6px 0}
+.sub-h{font-weight:700;margin:10px 0 2px;color:var(--blue-d)}
+.qa{font-weight:800;color:#c2410c;margin-right:4px}
+.ico{height:1.45em;width:auto;vertical-align:-0.38em;margin:0 2px;border-radius:4px}
+.ico.btn{height:1.55em}
+.badge{display:inline-block;font-size:13px;font-weight:700;border-radius:6px;padding:1px 8px;margin:0 4px 0 0;vertical-align:2px;white-space:nowrap}
+.src{color:var(--ok);background:var(--okbg)}
+.adm{color:var(--warn);background:var(--warnbg)}
+.crumb{font-size:13.5px;color:var(--sub);margin:2px 0 8px}
+
+/* figures */
+.figs{margin:12px -4px 4px;display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 4px 8px;-webkit-overflow-scrolling:touch}
+.figs.one{justify-content:center}
+.fig{flex:0 0 auto;scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;padding:0;max-width:92%}
+.fig img{display:block;border:1px solid var(--line);border-radius:10px;background:#fff}
+.fig.tall img{height:330px;width:auto;max-width:100%;object-fit:contain}
+.fig.wide{width:92%}
+.figs.one .fig.wide{width:100%;max-width:100%}
+.fig.wide img{width:100%;height:auto}
+.fig .cap{font-size:13.5px;color:var(--sub);line-height:1.4;text-align:center}
+.fig .zoom{font-size:12.5px;font-weight:700;color:#fff;background:var(--blue);border-radius:999px;padding:1px 10px;margin-top:-30px;margin-bottom:8px;align-self:flex-end;margin-right:8px;position:relative}
+.figs-count{font-size:13.5px;color:var(--sub);text-align:center;margin-top:-2px}
+
+/* reference blocks in AI answers */
+.ref{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:12px;background:#fbfcfd}
+.ref-h{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.ref-h b{font-size:16.5px;margin-right:2px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.act{flex:1 1 auto;border:2px solid var(--blue);color:var(--blue);background:#fff;border-radius:10px;padding:7px 10px;font-size:15px;font-weight:700;min-height:44px}
+.act.fill{background:var(--blue);color:#fff}
+.manual{margin-top:10px}
+.links{margin-top:10px}
+.links a{display:inline-block;color:var(--blue);font-weight:700}
+.help{font-size:14px;color:var(--sub);margin-top:12px;border-top:1px dashed var(--line);padding-top:9px}
+
+/* loading */
+.dots span{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--blue);margin:0 3px;animation:b 1.2s infinite ease-in-out}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-4px)}}
+
+/* input bar */
+.bar{position:sticky;bottom:0;z-index:20;background:#fff;border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+.bar-in{max-width:var(--w);margin:0 auto;display:flex;gap:8px}
+#q{flex:1;min-width:0;border:2px solid #b4c0cd;border-radius:12px;padding:10px 12px;font:inherit;font-size:17px;background:#fff;color:var(--ink)}
+#q:focus{outline:none;border-color:var(--blue)}
+#send{flex:0 0 auto;background:var(--blue);color:#fff;border:0;border-radius:12px;padding:0 18px;font-weight:800;font-size:17px;min-height:48px}
+#send:disabled{opacity:.5}
+
+/* viewer */
+.viewer{position:fixed;inset:0;z-index:50;background:#eef1f5;display:flex;flex-direction:column}
+.viewer[hidden],.sheet[hidden]{display:none}
+.v-top{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:10px 12px}
+.v-title{flex:1;min-width:0;font-weight:700;font-size:15.5px;line-height:1.4}
+.v-title small{display:block;font-weight:400;color:var(--sub);font-size:13px}
+.x{flex:0 0 auto;width:44px;height:44px;border-radius:50%;border:2px solid var(--ink);background:#fff;font-size:24px;line-height:1;font-weight:700}
+.v-body{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:12px;text-align:center;touch-action:pan-x pan-y pinch-zoom}
+.v-body img{background:#fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.08);max-width:none}
+.v-hint{font-size:13px;color:var(--sub);margin:8px 0 0}
+.v-bottom{background:#fff;border-top:1px solid var(--line);padding:8px 12px calc(10px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}
+.v-row{display:flex;gap:8px;align-items:center}
+.v-row .act{flex:1}
+.v-count{flex:0 0 auto;min-width:4.2em;text-align:center;font-weight:700;color:var(--sub)}
+.v-row .v-zoom{flex:0 0 56px;font-size:20px;padding:4px 0}
+
+/* table of contents */
+.sheet{position:fixed;inset:0;z-index:40;background:var(--bg);overflow:auto;-webkit-overflow-scrolling:touch}
+.sheet-top{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:10px 14px;z-index:2}
+.sheet-top b{flex:1;font-size:18px}
+.sheet-in{max-width:var(--w);margin:0 auto;padding:12px 12px 30px}
+.toc-cat{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.toc-cat h3{margin:0;padding:10px 14px;background:var(--blue-l);color:var(--blue-d);font-size:16.5px}
+.toc-cat h3 small{font-weight:400;color:var(--sub);font-size:13px;margin-left:6px}
+.toc-item{display:flex;width:100%;gap:8px;justify-content:space-between;align-items:center;border:0;border-top:1px solid var(--line);background:#fff;padding:11px 14px;text-align:left;font-size:16px;min-height:48px}
+.toc-item:first-of-type{border-top:0}
+.toc-item span.pg{flex:0 0 auto;font-size:13px;color:var(--sub)}
+.toc-foot{font-size:13.5px;color:var(--sub);line-height:1.7;padding:4px 4px 0}
+
+@media (min-width:720px){
+  .fig.tall img{height:380px}
+  .cats{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="logo" aria-hidden="true">結</div>
+    <div class="ht"><b>結ネット 使い方サポート</b><span>健康村自治会</span></div>
+    <button id="tocBtn" class="pill" type="button">目次</button>
+  </div>
+</header>
+
+<main id="log" aria-live="polite"></main>
+
+<form id="ask" class="bar" autocomplete="off">
+  <div class="bar-in">
+    <input id="q" type="text" enterkeyhint="send" maxlength="200" placeholder="例：パスワードを忘れた" aria-label="質問を入力">
+    <button id="send" type="submit">送信</button>
+  </div>
+</form>
+
+<div id="viewer" class="viewer" hidden role="dialog" aria-modal="true" aria-label="画面図の拡大表示">
+  <div class="v-top">
+    <div class="v-title" id="vTitle"></div>
+    <button class="x" id="vClose" type="button" aria-label="閉じる">×</button>
+  </div>
+  <div class="v-body" id="vBody"><img id="vImg" alt=""><p class="v-hint">2本指で広げるか、下の「＋」で拡大できます</p></div>
+  <div class="v-bottom">
+    <div class="v-row">
+      <button class="act" id="vPrev" type="button">◀ 前へ</button>
+      <span class="v-count" id="vCount"></span>
+      <button class="act" id="vNext" type="button">次へ ▶</button>
+    </div>
+    <div class="v-row">
+      <button class="act v-zoom" id="vOut" type="button" aria-label="縮小">－</button>
+      <button class="act v-zoom" id="vIn" type="button" aria-label="拡大">＋</button>
+      <button class="act" id="vPage" type="button">ページ全体を見る</button>
+    </div>
+  </div>
+</div>
+
+<div id="toc" class="sheet" hidden role="dialog" aria-modal="true" aria-label="目次">
+  <div class="sheet-top"><b>目次</b><button class="x" id="tocClose" type="button" aria-label="閉じる">×</button></div>
+  <div class="sheet-in" id="tocBody"></div>
+</div>
+
+<script src="app.js?v=1" defer></script>
+</body>
+</html>
