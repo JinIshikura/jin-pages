@@ -385,7 +385,7 @@
       }
       h += `</div>`;
     }
-    h += `<p class="toc-foot">出典：結ネット 利用者ガイド（${esc(KB.docs.guide.ver)}）、災害モードマニュアル（${esc(KB.docs.disaster.ver)}）。開発元：株式会社シーピーユー。アプリは現在Ver.9系のため、画面がマニュアルと違うことがあります。画面や表示は、お使いの端末や組織体によっても異なります。<br><a href="https://www.cpu-net.co.jp/product/yui-net/yui-support.html" target="_blank" rel="noopener">開発元サポートページ（最新のマニュアル・更新履歴）↗</a></p>`;
+    h += `<p class="toc-foot">出典：結ネット 利用者ガイド（${esc(KB.docs.guide.ver)}）、災害モードマニュアル（${esc(KB.docs.disaster.ver)}）。開発元：株式会社シーピーユー。画面図は以前の版のマニュアルのもので、最新のアプリでは見た目が少し違うことがあります。画面や表示は、お使いの端末や組織体によっても異なります。<br><a href="https://www.cpu-net.co.jp/product/yui-net/yui-support.html" target="_blank" rel="noopener">開発元サポートページ（最新のマニュアル・更新履歴）↗</a></p>`;
     $("#tocBody").innerHTML = h;
   }
   $("#tocBtn").addEventListener("click", () => { $("#toc").hidden = false; openOverlay("toc"); $("#toc").scrollTo(0, 0); });
@@ -433,7 +433,7 @@
   window.yuiDebug = { search: (q) => search(q).map((r) => [r.s.id, r.s.title, Math.round(r.sc * 10) / 10]) };
 
   // ---------- start ----------
-  fetch("kb.json?v=6").then((r) => r.json()).then((kb) => {
+  fetch("kb.json?v=7").then((r) => r.json()).then((kb) => {
     KB = kb;
     ORDER = kb.secs.map((s) => s.id);
     for (const s of kb.secs) SEC[s.id] = s;
