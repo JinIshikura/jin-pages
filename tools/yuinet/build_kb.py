@@ -48,6 +48,8 @@ for s in secs_in:
         item["links"] = [{"label": "インストールページを開く（開発元の公式ページ）", "url": C.INSTALL_URL}]
     secs.append(item)
     used_figs.extend(f for f in s["figs"] if f not in C.DROP_FIGS)
+for x in C.EXTRA_SECTIONS:
+    secs.append(dict(x))
 missing_kw = [s["id"] for s in secs if not s["kw"]]
 if missing_kw:
     print("WARNING no keywords:", missing_kw)
@@ -99,7 +101,7 @@ json.dump(kb, open(f"{OUT}/kb.json", "w"), ensure_ascii=False, separators=(",", 
 # AI context size estimate
 def ai_text(s):
     body = "\n".join(TOKEN.sub(lambda m: "［" + (icons[m.group(1)]["label"] or "アイコン") + "］", p) for p in s["paras"])
-    pg = f"P.{s['p'][0]}" + (f"-{s['p'][1]}" if s['p'][1] != s['p'][0] else "")
+    pg = "" if s["doc"] == "support" else f"P.{s['p'][0]}" + (f"-{s['p'][1]}" if s['p'][1] != s['p'][0] else "")
     return f"[{s['id']}] {C.DOCS[s['doc']]['name']} {pg} ／ {s['crumb']}（{s['title']}）\n{body}"
 ctx = "\n\n".join(ai_text(s) for s in secs)
 print("sections", len(secs), "figs", len(figs), "icons", len(icons), "ai_context_chars", len(ctx))

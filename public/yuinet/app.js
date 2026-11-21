@@ -16,7 +16,7 @@
   // ---------- helpers ----------
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
-  const pageLabel = (s) => KB.docs[s.doc].name + " P." + s.p[0] + (s.p[1] !== s.p[0] ? "–" + s.p[1] : "");
+  const pageLabel = (s) => s.doc === "support" ? KB.docs[s.doc].name : KB.docs[s.doc].name + " P." + s.p[0] + (s.p[1] !== s.p[0] ? "–" + s.p[1] : "");
   const pageKey = (doc, pg) => doc[0] + String(pg).padStart(2, "0");
   const circled = (n) => (n >= 1 && n <= 20 ? String.fromCharCode(0x2460 + n - 1) : String(n));
   function scrollToEl(e) { setTimeout(() => e.scrollIntoView({ behavior: "smooth", block: "start" }), 30); }
@@ -119,7 +119,7 @@
       figsHTML(s.figs, g) +
       `<div class="ans manual">${parasHTML(s.paras, faq)}</div>` +
       (s.links ? `<div class="links">${s.links.map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join("<br>")}</div>` : "") +
-      `<div class="acts"><button class="act" type="button" data-pages="${s.id}">マニュアルのページ全体を見る</button></div>` +
+      (s.doc === "support" ? "" : `<div class="acts"><button class="act" type="button" data-pages="${s.id}">マニュアルのページ全体を見る</button></div>`) +
       relatedChips(s) +
       `<p class="help">${esc(KB.help)}</p>`;
     return c;
@@ -182,9 +182,10 @@
       const g = reg(s.figs.map((id) => ({ kind: "fig", id })), s.title);
       h += `<div class="ref"><div class="ref-h"><b>${esc(s.title)}</b>${badges(s)}</div>` +
         (k === stripAt ? figsHTML(s.figs, g) : "") +
+        (s.links ? `<div class="links">${s.links.map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join("<br>")}</div>` : "") +
         `<div class="acts">` +
         (k !== stripAt && s.figs.length ? `<button class="act" type="button" data-g-open="${g}">画面図を見る（${s.figs.length}枚）</button>` : "") +
-        `<button class="act" type="button" data-sec="${s.id}">マニュアルの説明を読む</button></div></div>`;
+        `<button class="act" type="button" data-sec="${s.id}">${s.doc === "support" ? "くわしく見る" : "マニュアルの説明を読む"}</button></div></div>`;
     });
     const next = (res.next || []).slice(0, 3);
     if (next.length) h += `<div class="chips">${next.map((t) => `<button class="chip" type="button" data-q="${esc(t)}">${esc(t)}</button>`).join("")}</div>`;
@@ -379,11 +380,11 @@
       h += `<div class="toc-cat"><h3>${esc(c.name)}<small>${esc(c.desc)}</small></h3>`;
       for (const sid of c.secs) {
         const s = SEC[sid];
-        h += `<button class="toc-item" type="button" data-toc="${sid}"><span>${esc(s.title)}</span><span class="pg">P.${s.p[0]}</span></button>`;
+        h += `<button class="toc-item" type="button" data-toc="${sid}"><span>${esc(s.title)}</span><span class="pg">${s.doc === "support" ? "公式" : "P." + s.p[0]}</span></button>`;
       }
       h += `</div>`;
     }
-    h += `<p class="toc-foot">出典：結ネット 利用者ガイド（${esc(KB.docs.guide.ver)}）、災害モードマニュアル（${esc(KB.docs.disaster.ver)}）。開発元：株式会社シーピーユー。画面や表示は、お使いの端末や組織体によって異なることがあります。</p>`;
+    h += `<p class="toc-foot">出典：結ネット 利用者ガイド（${esc(KB.docs.guide.ver)}）、災害モードマニュアル（${esc(KB.docs.disaster.ver)}）。開発元：株式会社シーピーユー。アプリは現在Ver.9系のため、画面がマニュアルと違うことがあります。画面や表示は、お使いの端末や組織体によっても異なります。<br><a href="https://www.cpu-net.co.jp/product/yui-net/yui-support.html" target="_blank" rel="noopener">開発元サポートページ（最新のマニュアル・更新履歴）↗</a></p>`;
     $("#tocBody").innerHTML = h;
   }
   $("#tocBtn").addEventListener("click", () => { $("#toc").hidden = false; openOverlay("toc"); $("#toc").scrollTo(0, 0); });
@@ -431,7 +432,7 @@
   window.yuiDebug = { search: (q) => search(q).map((r) => [r.s.id, r.s.title, Math.round(r.sc * 10) / 10]) };
 
   // ---------- start ----------
-  fetch("kb.json?v=4").then((r) => r.json()).then((kb) => {
+  fetch("kb.json?v=5").then((r) => r.json()).then((kb) => {
     KB = kb;
     ORDER = kb.secs.map((s) => s.id);
     for (const s of kb.secs) SEC[s.id] = s;

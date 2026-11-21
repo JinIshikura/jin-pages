@@ -4,7 +4,43 @@
 DOCS = {
     "guide": {"name": "利用者ガイド", "ver": "Ver.6.1.0（2022年12月）", "pages": 50},
     "disaster": {"name": "災害モードマニュアル", "ver": "Ver.7.0.0（2023年9月）", "pages": 29},
+    "support": {"name": "開発元サポートページ", "ver": "2026年11月時点", "pages": 0},
 }
+
+SUPPORT_URL = "https://www.cpu-net.co.jp/product/yui-net/yui-support.html"
+
+# sections taken from the developer's support page (no PDF pages)
+EXTRA_SECTIONS = [
+    {"id": "s00a", "doc": "support", "p": [0, 0], "cat": "faq",
+     "title": "アプリの最新版とマニュアルの版",
+     "crumb": "開発元サポートページ ＞ お知らせ",
+     "kw": "バージョン 最新版 Ver.9 画面が違う マニュアルと違う 古い 更新 アップデート 更新履歴 新しい機能",
+     "paras": [
+         "結ネットのアプリは、現在 Ver.9 系です（Ver.9.1.0 は2026年11月17日公開）。",
+         "このチャットのもとにしたマニュアルは、利用者ガイド Ver.6.1.0 と災害モードマニュアル Ver.7.0.0 です。Ver.9 系のマニュアルは開発元で準備中です。",
+         "そのため、アプリの画面やボタンの名前が、マニュアルの画面図と違うことがあります。",
+         "＊ 各バージョンで何が変わったかは、開発元サポートページの「更新履歴」で確認できます。",
+     ],
+     "links": [{"label": "開発元サポートページ（マニュアル・更新履歴）", "url": SUPPORT_URL}]},
+    {"id": "s00b", "doc": "support", "p": [0, 0], "cat": "faq",
+     "title": "公式マニュアル・利用規約・問い合わせ先",
+     "crumb": "開発元サポートページ ＞ マニュアル・お問い合わせ",
+     "kw": "公式マニュアル マニュアルのダウンロード PDF 利用規約 プライバシーポリシー 個人情報 問い合わせ先 誰に聞けば 管理者 開発元 シーピーユー CPU Web版 管理画面",
+     "paras": [
+         "開発元（株式会社シーピーユー）のサポートページで、マニュアルのPDFを見られます。",
+         "アプリ用：利用者ガイド（一般の利用者向けの基本操作）、災害モードマニュアル（災害モード・訓練モードの操作）。",
+         "Web用（管理者・役員向け）：導入編、記事作成（一般記事）編、記事作成（総会型）編、記事作成（掲示板型）編、設定編。",
+         "＊ 一般の利用者の操作についての質問は、利用している組織体の管理者が受け付けます。健康村自治会では、班長またはデジタル化執行部にご相談ください。",
+         "＊ メニューの追加・変更や管理者の操作についての質問は、契約者・サポート提供者が受け付けます。",
+     ],
+     "links": [
+         {"label": "開発元サポートページ（マニュアル一覧）", "url": SUPPORT_URL},
+         {"label": "利用者ガイド（画面表示用PDF）", "url": "https://www.cpu-net.co.jp/product/yui-net/doc/yuinet-manual_s.pdf"},
+         {"label": "災害モードマニュアル（画面表示用PDF）", "url": "https://www.cpu-net.co.jp/product/yui-net/doc/yuinet-manual_disastermode_s.pdf"},
+         {"label": "利用規約", "url": "https://www.cpu-net.co.jp/product/yui-net/policy/yuinet_riyoukiyaku.html"},
+         {"label": "アプリケーション・プライバシーポリシー", "url": "https://www.cpu-net.co.jp/product/yui-net/policy/yuinet_privacy_policy.html"},
+     ]},
+]
 
 INSTALL_URL = "https://www.cpu-net.co.jp/product/yui-net/yui-install.html"
 
@@ -157,7 +193,7 @@ CATS = [
     {"id": "setting", "name": "設定・家族", "desc": "パスワード・世帯",
      "secs": "g38a g38b g39a g39b g40a g40b g41a g41b g42a g44a g45a"},
     {"id": "faq", "name": "よくある質問", "desc": "機種変更・パスワード",
-     "secs": "g45b g46a g47a g48a g48b g49a"},
+     "secs": "g45b g46a g47a g48a g48b g49a s00a s00b"},
     {"id": "disaster", "name": "災害モード", "desc": "安否の発信・確認",
      "secs": "d02a d02b d03a d12a d14a d15a d16a d16b d17a d18a d20a d21a d22a d22b d27a"},
     {"id": "disaster_admin", "name": "災害モード（役員）", "desc": "発動・訓練・終了",

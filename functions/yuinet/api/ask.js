@@ -49,6 +49,8 @@ const RULES = `あなたは、地域ICTアプリ「結ネット」の使い方�
 - 結ネットのアプリの中の操作や機能を、一般知識で推測して書かない。結ネットの中の操作はマニュアルの内容だけで答える。
 
 共通のルール
+- アプリは現在 Ver.9 系で、マニュアル（Ver.6.1.0・7.0.0）より新しい。「画面が違う」「ボタンが見つからない」と言われたら、版の違いで画面が変わっている可能性を伝え、項目 s00a（アプリの最新版とマニュアルの版）を refs に入れる。
+- 公式マニュアル・利用規約・プライバシーポリシー・問い合わせ先を聞かれたら、項目 s00b を refs に入れる（リンクは画面に表示される）。URLは書かない。
 - 回答は長くても12行程度まで。質問に関係のない手順は書かない。
 - マニュアルにも上の一般的な操作にもあたらないこと（自治会独自の決まり、端末の故障、アプリの不具合など）は推測で答えず、「マニュアルには載っていません」と伝え、班長またはデジタル化執行部への相談をすすめる。
 - 役員・管理者など権限のある人だけができる操作は、そのことを書く。
@@ -65,10 +67,11 @@ const RULES = `あなたは、地域ICTアプリ「結ネット」の使い方�
 function buildSystem(kb) {
   const label = (id) => (kb.icons[id] && kb.icons[id].label) || "アイコン";
   const parts = kb.secs.map((s) => {
-    const pg = "P." + s.p[0] + (s.p[1] !== s.p[0] ? "-" + s.p[1] : "");
+    const pg = s.doc === "support" ? "" : "P." + s.p[0] + (s.p[1] !== s.p[0] ? "-" + s.p[1] : "");
     const head = `[${s.id}] ${kb.docs[s.doc].name} ${pg} ／ ${s.crumb}（${s.title}）${s.admin ? "［役員・管理者向けの操作］" : ""}`;
     const body = s.paras.map((p) => p.replace(/\{i:([a-z0-9]+)\}/g, (_, id) => "［" + label(id) + "］")).join("\n");
-    return head + "\n" + body;
+    const links = (s.links || []).map((l) => `（リンク：${l.label}）`).join("");
+    return head + "\n" + body + (links ? "\n" + links : "");
   });
   return "# マニュアル\n\n" + parts.join("\n\n");
 }
@@ -228,7 +231,7 @@ export async function onRequestPost({ request, env }) {
   let answer = pick("answer") || text.split(/<(?:refs|general|next)>/)[0].replace(/<\/?answer>/g, "").trim();
   answer = answer.replace(/\*\*/g, "").replace(/^#+\s*/gm, "").slice(0, 2000);
   const ids = new Set(KB.secs.map((s) => s.id));
-  const refs = [...new Set((pick("refs").match(/[gd]\d{2}[a-h]/g) || []).filter((id) => ids.has(id)))].slice(0, 3);
+  const refs = [...new Set((pick("refs").match(/[gds]\d{2}[a-h]/g) || []).filter((id) => ids.has(id)))].slice(0, 3);
   const next = pick("next").split(/[｜|\n]/).map((s) => s.trim()).filter((s) => s && s.length <= 40).slice(0, 3);
   const general = /yes/i.test(pick("general")) || answer.includes("【マニュアル外");
   if (data.usage) console.log("usage", JSON.stringify(data.usage));
