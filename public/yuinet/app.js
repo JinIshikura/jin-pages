@@ -427,7 +427,7 @@
   window.yuiDebug = { search: (q) => search(q).map((r) => [r.s.id, r.s.title, Math.round(r.sc * 10) / 10]) };
 
   // ---------- start ----------
-  fetch("kb.json?v=3").then((r) => r.json()).then((kb) => {
+  fetch("kb.json?v=4").then((r) => r.json()).then((kb) => {
     KB = kb;
     ORDER = kb.secs.map((s) => s.id);
     for (const s of kb.secs) SEC[s.id] = s;

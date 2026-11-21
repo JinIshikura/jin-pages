@@ -40,14 +40,14 @@ for s in secs_in:
     item = {
         "id": sid, "doc": s["doc"], "p": C.PAGES.get(sid, [s["page_start"], s["page_end"]]),
         "title": C.TITLES.get(sid, s["title"]), "crumb": s["crumb"],
-        "cat": cat_of[sid], "kw": C.KEYWORDS.get(sid, ""), "paras": paras, "figs": s["figs"],
+        "cat": cat_of[sid], "kw": C.KEYWORDS.get(sid, ""), "paras": paras, "figs": [f for f in s["figs"] if f not in C.DROP_FIGS],
     }
     if sid in C.ADMIN:
         item["admin"] = True
     if sid == "g02a":
         item["links"] = [{"label": "インストールページを開く（開発元の公式ページ）", "url": C.INSTALL_URL}]
     secs.append(item)
-    used_figs.extend(s["figs"])
+    used_figs.extend(f for f in s["figs"] if f not in C.DROP_FIGS)
 missing_kw = [s["id"] for s in secs if not s["kw"]]
 if missing_kw:
     print("WARNING no keywords:", missing_kw)

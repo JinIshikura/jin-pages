@@ -199,9 +199,9 @@ ICON_LABELS = {
 PARA_OVERRIDES = {
     "g02a": [
         "「結ネット」をお使いの端末（スマートフォンやタブレット）で使えるようにするための初期設定です。",
-        "① カメラを起動し、マニュアルのQRコードを読み取る",
+        "① 下の「インストールページを開く」を押す（紙のマニュアルではQRコードを読み取ります）",
         "＊ 「結ネット」のインストールページが表示されます。",
-        "＊ QRコードを読み込めない場合は、各ストア（App Store や Google Play、Play ストア）で「結ネット」と検索してもインストールできます。",
+        "＊ ページが開けない場合は、各ストア（App Store や Google Play、Play ストア）で「結ネット」と検索してもインストールできます。",
         "② お使いの端末に応じた入手先のボタンを押す",
         "＜iPhone または iPad をお使いの方＞",
         "1）「App Store」のボタンを押す",
@@ -298,6 +298,9 @@ PARA_OVERRIDES = {
         "{i:d21i4} 回答順……集計グラフのステータスの凡例順で表示されます。",
     ],
 }
+
+# figures not shown in answers (the QR code: the install link is shown instead)
+DROP_FIGS = {"g02f1"}
 
 # page ranges that the automatic merge got wrong
 PAGES = {"g45b": [46, 46]}
