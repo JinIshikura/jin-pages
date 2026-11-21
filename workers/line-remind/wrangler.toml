@@ -1,0 +1,7 @@
+name = "line-remind"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+
+# 毎分起動して、その分に予定されたメッセージがあれば送る
+[triggers]
+crons = ["* * * * *"]
