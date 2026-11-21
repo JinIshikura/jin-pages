@@ -57,7 +57,10 @@
       const body = (s) => labelIcons(esc(s));
       let m;
       if ((m = ln.match(/^([①-⑳])\s*/))) h += `<div class="row"><span class="n">${m[1]}</span><span class="t">${body(ln.slice(m[0].length))}</span></div>`;
+      else if ((m = ln.match(/^(\d{1,2})[.．）)]\s*/))) h += `<div class="row"><span class="n">${m[1]}.</span><span class="t">${body(ln.slice(m[0].length))}</span></div>`;
       else if (/^[＊*]/.test(ln)) h += `<div class="ast">${body(ln.replace(/^[＊*]\s*/, "＊ "))}</div>`;
+      else if (/^【マニュアル外/.test(ln)) { const rest = ln.replace(/^【[^】]*】\s*/, ""); if (rest) h += `<p>${body(rest)}</p>`; }
+      else if (/^(iPhone|Android|アンドロイド)(の場合)?[:：]?$/.test(ln)) h += `<div class="sub-h">${esc(ln)}</div>`;
       else h += `<p>${body(ln)}</p>`;
     }
     return h;
@@ -168,7 +171,8 @@
   // ---------- AI answer ----------
   function aiCard(res, q) {
     const c = el("div", "card");
-    let h = `<div class="ans">${aiHTML(res.answer)}</div>`;
+    let h = (res.general ? `<p class="gen-note">マニュアル外の一般的な手順です。機種やOSによって画面が違うことがあります。</p>` : "") +
+      `<div class="ans">${aiHTML(res.answer)}</div>`;
     let refs = (res.refs || []).filter((id) => SEC[id]);
     if (!refs.length) refs = search(q, 2).filter((r) => r.sc >= THRESH).map((r) => r.s.id);
     refs = refs.slice(0, 3);
