@@ -17,7 +17,7 @@
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
   const pageLabel = (s) => s.doc === "support" ? KB.docs[s.doc].name : KB.docs[s.doc].name + " P." + s.p[0] + (s.p[1] !== s.p[0] ? "–" + s.p[1] : "");
-  const pageKey = (doc, pg) => doc[0] + String(pg).padStart(2, "0");
+  const pageKey = (doc, pg) => ((KB.docs[doc] && KB.docs[doc].pfx) || doc[0]) + String(pg).padStart(2, "0");
   const circled = (n) => (n >= 1 && n <= 20 ? String.fromCharCode(0x2460 + n - 1) : String(n));
   function scrollToEl(e) { setTimeout(() => e.scrollIntoView({ behavior: "smooth", block: "start" }), 30); }
 
@@ -227,6 +227,7 @@
       let sc = 0;
       for (const b of qb) { const tf = d.vec.get(b); if (tf) sc += Math.log(1 + IDX.N / IDX.df.get(b)) * Math.log(1 + tf); }
       for (const k of d.kws) if (nq.includes(k)) sc += 2 + k.length * 0.9;
+      if (d.s.group === "extra") sc *= 0.6;
       if (sc > 0) out.push({ s: d.s, sc });
     }
     out.sort((a, b) => b.sc - a.sc);
@@ -345,7 +346,7 @@
     $("#vPrev").disabled = V.i === 0;
     $("#vNext").disabled = V.i === V.items.length - 1;
     const pb = $("#vPage");
-    pb.hidden = !c.fig;
+    pb.hidden = !c.fig || !!(V.items[V.i].kind === "fig" && KB.figs[V.items[V.i].id].pf);
     pb.textContent = V.page ? "画面図にもどる" : "ページ全体を見る";
     applyZoom();
     $("#vBody").scrollTo(0, 0);
@@ -432,7 +433,7 @@
   window.yuiDebug = { search: (q) => search(q).map((r) => [r.s.id, r.s.title, Math.round(r.sc * 10) / 10]) };
 
   // ---------- start ----------
-  fetch("kb.json?v=5").then((r) => r.json()).then((kb) => {
+  fetch("kb.json?v=6").then((r) => r.json()).then((kb) => {
     KB = kb;
     ORDER = kb.secs.map((s) => s.id);
     for (const s of kb.secs) SEC[s.id] = s;

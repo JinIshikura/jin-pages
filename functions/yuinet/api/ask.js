@@ -48,6 +48,11 @@ const RULES = `あなたは、地域ICTアプリ「結ネット」の使い方�
 - 最後に「＊ 機種やOSのバージョンによって、画面や名前が違うことがあります。」と書く。
 - 結ネットのアプリの中の操作や機能を、一般知識で推測して書かない。結ネットの中の操作はマニュアルの内容だけで答える。
 
+追加資料（更新内容・Web版マニュアル）について
+- 「追加資料」があれば、それも根拠に使ってよい。「更新内容 Ver.x」はマニュアルより新しい変更点。マニュアルと違うときは更新内容を優先し、「Ver.x で変わりました」と書く。更新内容にない細かい操作手順は推測しない。
+- 「Web版マニュアル」は、管理者・役員がパソコンのブラウザで使う「結ネットWeb」の操作。スマホアプリの操作と混ぜず、Webの操作であることを書く。
+- 追加資料の手順の丸数字も、そのまま使う。
+
 共通のルール
 - アプリは現在 Ver.9 系で、マニュアル（Ver.6.1.0・7.0.0）より新しい。「画面が違う」「ボタンが見つからない」と言われたら、版の違いで画面が変わっている可能性を伝え、項目 s00a（アプリの最新版とマニュアルの版）を refs に入れる。
 - 公式マニュアル・利用規約・プライバシーポリシー・問い合わせ先を聞かれたら、項目 s00b を refs に入れる（リンクは画面に表示される）。URLは書かない。
@@ -66,7 +71,7 @@ const RULES = `あなたは、地域ICTアプリ「結ネット」の使い方�
 
 function buildSystem(kb) {
   const label = (id) => (kb.icons[id] && kb.icons[id].label) || "アイコン";
-  const parts = kb.secs.map((s) => {
+  const parts = kb.secs.filter((s) => s.group !== "extra").map((s) => {
     const pg = s.doc === "support" ? "" : "P." + s.p[0] + (s.p[1] !== s.p[0] ? "-" + s.p[1] : "");
     const head = `[${s.id}] ${kb.docs[s.doc].name} ${pg} ／ ${s.crumb}（${s.title}）${s.admin ? "［役員・管理者向けの操作］" : ""}`;
     const body = s.paras.map((p) => p.replace(/\{i:([a-z0-9]+)\}/g, (_, id) => "［" + label(id) + "］")).join("\n");
@@ -76,7 +81,48 @@ function buildSystem(kb) {
   return "# マニュアル\n\n" + parts.join("\n\n");
 }
 
-async function callClaude(env, messages, attempt) {
+// ---- retrieval over the extra documents (update notes, web admin manuals) ----
+let XIDX = null;
+const normJ = (t) => String(t).normalize("NFKC").toLowerCase()
+  .replace(/[ァ-ヶ]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x60))
+  .replace(/\{i:[a-z0-9]+\}/g, "")
+  .replace(/[\s　、。，．,.・「」『』（）()［］\[\]【】＜＞<>!?！？…:：;；\/／〜~＊*①-⑳→←]/g, "");
+const bigr = (t) => { const o = []; for (let i = 0; i < t.length - 1; i++) o.push(t.slice(i, i + 2)); return o; };
+function buildXIdx(kb) {
+  const df = new Map();
+  const docs = kb.secs.filter((s) => s.group === "extra").map((s) => {
+    const vec = new Map();
+    const add = (t, w) => { for (const b of bigr(normJ(t))) vec.set(b, (vec.get(b) || 0) + w); };
+    add(s.title, 3); add(s.crumb, 1); add(s.paras.join(" "), 1);
+    for (const b of vec.keys()) df.set(b, (df.get(b) || 0) + 1);
+    return { s, vec };
+  });
+  XIDX = { df, docs, N: docs.length };
+}
+function extraContext(kb, text, budget = 14000) {
+  if (!XIDX) buildXIdx(kb);
+  const qb = [...new Set(bigr(normJ(text)))];
+  const scored = [];
+  for (const d of XIDX.docs) {
+    let sc = 0;
+    for (const b of qb) { const tf = d.vec.get(b); if (tf) sc += Math.log(1 + XIDX.N / XIDX.df.get(b)) * Math.log(1 + tf); }
+    if (sc > 0) scored.push({ s: d.s, sc });
+  }
+  scored.sort((a, b) => b.sc - a.sc);
+  const label = (id) => (kb.icons[id] && kb.icons[id].label) || "アイコン";
+  let out = "", used = 0;
+  for (const { s } of scored.slice(0, 10)) {
+    const pg = "P." + s.p[0] + (s.p[1] !== s.p[0] ? "-" + s.p[1] : "");
+    const body = s.paras.map((p) => p.replace(/\{i:([a-z0-9]+)\}/g, (_, id) => "［" + label(id) + "］")).join("\n");
+    const block = `[${s.id}] ${kb.docs[s.doc].name} ${pg} ／ ${s.crumb}（${s.title}）${s.admin ? "［役員・管理者向けの操作］" : ""}\n${body}\n\n`;
+    if (used + block.length > budget) { if (used > 0) continue; }
+    out += block; used += block.length;
+    if (used > budget) break;
+  }
+  return out ? "# 追加資料（質問に関係しそうな、更新内容とWeb版マニュアルの抜粋）\n\n" + out : "";
+}
+
+async function callClaude(env, messages, attempt, extra) {
   const base = env.ANTHROPIC_BASE_URL || "https://api.anthropic.com";
   const payload = {
     model: env.MODEL || MODEL,
@@ -84,6 +130,7 @@ async function callClaude(env, messages, attempt) {
     system: [
       { type: "text", text: RULES },
       { type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } },
+      ...(extra ? [{ type: "text", text: extra }] : []),
     ],
     messages,
   };
@@ -208,10 +255,11 @@ export async function onRequestPost({ request, env }) {
 
   let res, data;
   try {
-    res = await callClaude(env, messages, 0);
+    const extra = extraContext(KB, (prevQ ? prevQ + " " : "") + q);
+    res = await callClaude(env, messages, 0, extra);
     if (res.status === 400) {
       console.log("first attempt 400:", (await res.text()).slice(0, 300));
-      res = await callClaude(env, messages, 1);
+      res = await callClaude(env, messages, 1, extra);
     }
     data = await res.json();
   } catch (e) {
@@ -231,7 +279,7 @@ export async function onRequestPost({ request, env }) {
   let answer = pick("answer") || text.split(/<(?:refs|general|next)>/)[0].replace(/<\/?answer>/g, "").trim();
   answer = answer.replace(/\*\*/g, "").replace(/^#+\s*/gm, "").slice(0, 2000);
   const ids = new Set(KB.secs.map((s) => s.id));
-  const refs = [...new Set((pick("refs").match(/[gds]\d{2}[a-h]/g) || []).filter((id) => ids.has(id)))].slice(0, 3);
+  const refs = [...new Set((pick("refs").match(/[a-z][a-z0-9]{2,9}/g) || []).filter((id) => ids.has(id)))].slice(0, 3);
   const next = pick("next").split(/[｜|\n]/).map((s) => s.trim()).filter((s) => s && s.length <= 40).slice(0, 3);
   const general = /yes/i.test(pick("general")) || answer.includes("【マニュアル外");
   if (data.usage) console.log("usage", JSON.stringify(data.usage));

@@ -295,7 +295,7 @@ def join_lines(lines):
 
 def main():
     sections, figs, icon_meta = [], {}, {}
-    for name in ("guide", "disaster"):
+    for name in SRC:
         doc = pymupdf.open(SRC[name])
         cur = {"h1": "", "h2": "", "h3": ""}
         sec = None
