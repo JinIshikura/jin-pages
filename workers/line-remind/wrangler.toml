@@ -7,3 +7,8 @@ keep_vars = true
 # 毎分起動して、その分に予定されたメッセージがあれば送る
 [triggers]
 crons = ["* * * * *"]
+
+# 到着の記録を保存する場所（二人のスマホで同期）
+[[kv_namespaces]]
+binding = "STATE"
+id = "ef59b8b7480b4ef8a6ae629740537566"

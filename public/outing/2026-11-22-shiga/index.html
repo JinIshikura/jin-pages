@@ -136,6 +136,19 @@ footer p{background:rgba(255,255,255,.92);border-radius:14px;padding:12px 14px}
 .mepulse{animation:mep 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
 @keyframes mep{from{transform:scale(.6);opacity:.35}to{transform:scale(1.6);opacity:0}}
 @media(prefers-reduced-motion:reduce){.mepulse{animation:none}}
+.wx{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:6px 0 2px;font-size:14px;color:var(--sub)}
+.wx b{font-size:16px;color:var(--ink)}
+.wx .rain{color:#2f6db0;font-weight:700}
+.rainadv{margin-top:8px;padding:8px 12px;border-radius:12px;background:#eef5fc;color:#244f7d;font-size:14px}
+.wxsum{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:10px 14px;background:#fff;border-top:1px solid var(--line);font-size:14px;color:var(--sub)}
+.wxsum b{color:var(--ink);font-size:16px}
+.tm s{color:var(--sub);font-weight:500;font-size:.75em;margin-right:6px}
+.adjtag{display:inline-block;font-size:12px;font-weight:900;border-radius:6px;padding:1px 8px;background:#fdecd2;color:#8a4b0f}
+.adjtag.cut{background:#eee;color:#666}
+.done-tag{display:inline-block;font-size:12px;font-weight:900;border-radius:6px;padding:1px 8px;background:#e3f3e8;color:#2f7d4f}
+.stop.skipped .card{opacity:.6}
+.plan-banner{display:none;margin:0 0 14px;padding:12px 14px;border-radius:16px;background:#fff6e5;border:1.5px solid var(--gold);font-size:15px;font-weight:700;line-height:1.6}
+.plan-banner.show{display:block}
 </style>
 </head>
 <body>
@@ -145,9 +158,11 @@ footer p{background:rgba(255,255,255,.92);border-radius:14px;padding:12px 14px}
 <header class="head0"><p class="date">2026.11.22 日曜　千里丘発 日帰りドライブ</p><br><h1>紅葉と夜景の滋賀ドライブ</h1></header>
 <section class="topmap" id="topmap" aria-label="ルート地図">
 <div class="fig"><svg id="topSvg" role="img" aria-label="琵琶湖周辺のルート地図。予定をスクロールすると車が進みます"></svg></div>
+<div class="wxsum" id="wxsum">天気予報を読み込み中…</div>
 <div class="mapbar"><span>予定をスクロールすると車が進みます。青い点は現在地です</span><a class="btn allr" href="#" target="_blank" rel="noopener">全ルートをGoogleマップで</a></div>
 </section>
 <h3 class="sec"><span>タイムライン</span></h3>
+<div class="plan-banner" id="planBanner" role="status"></div>
 <main>
 <ol class="tl" id="tl"></ol>
 <section class="notes">
@@ -411,12 +426,75 @@ const showNear=(i,km)=>{const li=tl.querySelector(`.stop[data-i="${i}"]`);if(!li
  const hd=card.querySelector(".head");if(hd&&!hd.querySelector(".here"))hd.insertAdjacentHTML("beforeend",'<span class="here">現在地の近く</span>');
  setTimeout(()=>scrollTo({top:li.getBoundingClientRect().top+scrollY-16,behavior:reduce?"auto":"smooth"}),300);};
 let nearDone=false;
-if("geolocation" in navigator){navigator.geolocation.watchPosition(pos=>{const me=[pos.coords.latitude,pos.coords.longitude];ME=[me[1],me[0]];maps.forEach(m=>m.render(F,true));if(nearDone)return;nearDone=true;
+if("geolocation" in navigator){navigator.geolocation.watchPosition(pos=>{const me=[pos.coords.latitude,pos.coords.longitude];ME=[me[1],me[0]];maps.forEach(m=>m.render(F,true));checkArrive(me);if(nearDone)return;nearDone=true;
  const near=T.map((s,i)=>({s,i})).filter(o=>o.s.info&&GEO[o.s.info]).map(o=>({...o,km:distKm(me,GEO[o.s.info])})).filter(o=>o.km<=1.5);
  if(!near.length)return;const best=Math.min(...near.map(o=>o.km));let group=near.filter(o=>Math.abs(o.km-best)<0.05);
  const d=new Date(),today=d.getFullYear()===2026&&d.getMonth()===10&&d.getDate()===22,now=d.getHours()*60+d.getMinutes();
  let pick=group[0];if(today){const past=group.filter(o=>o.s.m&&o.s.m[0]<=now);if(past.length)pick=past[past.length-1];}
  showNear(pick.i,pick.km);},()=>{},{enableHighAccuracy:false,timeout:10000,maximumAge:120000});}
+
+/* ===== 天気（Open-Meteo）と、遅れの自動反映（line-remindサーバー） ===== */
+const WORKER="https://line-remind.6305byjin.workers.dev";
+const DAYSTR="2026-11-22";
+const isDay=()=>{const d=new Date();return d.getFullYear()===2026&&d.getMonth()===10&&d.getDate()===22;};
+const hmS=m=>`${Math.floor(m/60)}:${String(Math.round(m)%60).padStart(2,"0")}`;
+const toMin=t=>{const [a,b]=t.split(":").map(Number);return a*60+b;};
+const DRIVE_PREV=["start","cafe","hiyoshi","shira"];
+const idOf=(s,i)=>s.drive!==undefined?null:(i===0?"start":s.end?"end":s.info||null);
+let SCHED=null;
+const WXLOC={start:[34.7902,135.5472],namiki:[35.4712,136.037],cafe:[35.4712,136.037],sakamoto:[35.0716,135.8622],hiyoshi:[35.0716,135.8622],shira:[35.2745,136.011],yume:[35.0514,135.8393],dinner:[35.046,135.786],end:[34.7902,135.5472]};
+const WXKEYS=["start","namiki","hiyoshi","shira","yume","dinner"];
+let WX=null;
+const WCODE=c=>c===0?["☀","晴れ"]:c<=2?["⛅","晴れ時々くもり"]:c===3?["☁","くもり"]:c<=48?["🌫","霧"]:c<=67||(c>=80&&c<=82)?["☂","雨"]:c<=77||(c>=85&&c<=86)?["❄","雪"]:c>=95?["⚡","雷雨"]:["☁","くもり"];
+const RAIN_ADV={namiki:"雨なら並木の散策は短めにして、カフェでゆっくり。足元がぬかるむことも。",cafe:"雨の日はカフェが混みやすいので早めに。",sakamoto:"雨なら町歩きは短めに。石畳がすべりやすいです。",hiyoshi:"参道の石段がすべりやすいので、傘と歩きやすい靴で。",shira:"雨なら鳥居は車窓や駐車場から眺めるだけでもOK。",yume:"雨や霧で夜景が見えにくいことも。山頂はやめて夢見が丘だけに。",dinner:"駐車場からお店まで傘を。"};
+async function loadWeather(){
+ try{
+  const lat=WXKEYS.map(k=>WXLOC[k][0]).join(","),lon=WXKEYS.map(k=>WXLOC[k][1]).join(",");
+  const u=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&start_date=${DAYSTR}&end_date=${DAYSTR}`;
+  const r=await fetch(u);if(!r.ok)throw 0;let d=await r.json();if(!Array.isArray(d))d=[d];
+  WX={};WXKEYS.forEach((k,i)=>WX[k]=d[i]);WX.cafe=WX.namiki;WX.sakamoto=WX.hiyoshi;WX.end=WX.start;
+  const dl=WX.hiyoshi.daily,[ic,tx]=WCODE(dl.weather_code[0]);
+  document.getElementById("wxsum").innerHTML=`<span><b>${ic} ${tx}</b>（大津・22日）</span><span>最高${Math.round(dl.temperature_2m_max[0])}℃／最低${Math.round(dl.temperature_2m_min[0])}℃</span><span>降水確率 最大${dl.precipitation_probability_max[0]??"-"}%</span>`;
+  applyAll();
+ }catch(e){document.getElementById("wxsum").textContent="天気予報を読み込めませんでした（電波のよいところで開き直してください）";}
+}
+const wxAt=(id,min)=>{if(!WX||!WX[id])return null;const h=WX[id].hourly,key=`${DAYSTR}T${String(Math.min(23,Math.floor(min/60))).padStart(2,"0")}:00`;const i=h.time.indexOf(key);if(i<0)return null;return {t:h.temperature_2m[i],p:h.precipitation_probability[i],c:h.weather_code[i]};};
+function applyAll(){
+ const by=SCHED?Object.fromEntries(SCHED.stops.map(s=>[s.id,s])):{};
+ tl.querySelectorAll(".stop").forEach(li=>{
+  const i=+li.dataset.i,s=T[i];
+  if(s.drive!==undefined){const prev=by[DRIVE_PREV[s.drive]];const tm=li.querySelector(".tm");if(prev&&tm){const dep=prev.time+prev.stay,plan=s.t?toMin(s.t):null;if(plan!=null)tm.innerHTML=dep!==plan?`<s>${s.t}</s>${hmS(dep)}`:s.t;}return;}
+  const id=idOf(s,i),card=li.querySelector(".card"),head=card.querySelector(".head"),tm=head.querySelector(".tm");
+  let min=toMin(s.t);
+  head.querySelectorAll(".adjtag,.done-tag").forEach(e=>e.remove());li.classList.remove("skipped");
+  const st=id&&by[id];
+  if(st){
+   // 坂本の町歩きと日吉大社、並木とカフェは同じ場所なので、ページの時刻はサーバーの計算に合わせる
+   min=st.time;tm.innerHTML=st.time!==toMin(s.t)?`<s>${s.t}</s>${hmS(st.time)}`:s.t;
+   if(st.status==="skipped"){li.classList.add("skipped");head.insertAdjacentHTML("beforeend",`<span class="adjtag cut">カット</span>`);}
+   else if(st.status==="window")head.insertAdjacentHTML("beforeend",`<span class="adjtag">車窓から</span>`);
+   else if(st.status==="short")head.insertAdjacentHTML("beforeend",`<span class="adjtag">${st.note}</span>`);
+   if(st.arrived!=null)head.insertAdjacentHTML("beforeend",`<span class="done-tag">${hmS(st.arrived)} 到着</span>`);
+  }
+  card.querySelectorAll(".wx,.rainadv").forEach(e=>e.remove());
+  const w=id&&wxAt(id,min);
+  if(w){const [ic,tx]=WCODE(w.c);head.insertAdjacentHTML("afterend",`<div class="wx"><b>${ic} ${Math.round(w.t)}℃</b><span>${tx}</span><span class="${w.p>=50?"rain":""}">降水${w.p??"-"}%</span>${id==="yume"&&w.t<8?"<span>上着をしっかり</span>":""}</div>`);
+   if(w.p>=50&&RAIN_ADV[id]){const p=card.querySelector(":scope > p");(p||head).insertAdjacentHTML("afterend",`<div class="rainadv">☂ ${RAIN_ADV[id]}</div>`);}}
+ });
+ const bn=document.getElementById("planBanner");
+ if(SCHED&&SCHED.summary){bn.textContent="予定を組み直しました："+SCHED.summary;bn.classList.add("show");}else bn.classList.remove("show");
+}
+async function loadState(){try{const r=await fetch(WORKER+"/state",{cache:"no-store"});if(!r.ok)throw 0;SCHED=await r.json();applyAll();}catch(e){}}
+const ZONES={namiki:[[35.4712,136.037],0.4],sakamoto:[[35.0716,135.8622],0.5],shira:[[35.2745,136.011],0.3],yume:[[35.0514,135.8393],0.4]};
+const posted=new Set();
+function checkArrive(me){
+ if(!isDay())return;
+ for(const [id,[ll,r]] of Object.entries(ZONES)){
+  if(posted.has(id)||(SCHED&&SCHED.arrivals&&SCHED.arrivals[id]!=null))continue;
+  if(distKm(me,ll)<=r){posted.add(id);fetch(WORKER+"/arrive",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({id})}).then(r=>r.json()).then(d=>{if(d&&d.stops){SCHED=d;applyAll();}}).catch(()=>posted.delete(id));}
+ }
+}
+loadWeather();loadState();setInterval(loadState,60000);
 const mark=()=>{const d=new Date();tl.querySelectorAll(".now").forEach(e=>e.classList.remove("now"));if(!(d.getFullYear()===2026&&d.getMonth()===10&&d.getDate()===22))return false;const n=d.getHours()*60+d.getMinutes();const i=T.findIndex(s=>s.m&&n>=s.m[0]&&n<s.m[1]);if(i>=0){tl.querySelector(`[data-i="${i}"]`).classList.add("now");return T[i];}return false;};
 mark();setInterval(mark,60000);
 
