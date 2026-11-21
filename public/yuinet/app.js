@@ -16,7 +16,8 @@
   // ---------- helpers ----------
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
-  const pageLabel = (s) => s.doc === "support" ? KB.docs[s.doc].name : KB.docs[s.doc].name + " P." + s.p[0] + (s.p[1] !== s.p[0] ? "–" + s.p[1] : "");
+  const noPage = (s) => s.doc === "support" || s.doc === "local";
+  const pageLabel = (s) => noPage(s) ? KB.docs[s.doc].name : KB.docs[s.doc].name + " P." + s.p[0] + (s.p[1] !== s.p[0] ? "–" + s.p[1] : "");
   const pageKey = (doc, pg) => ((KB.docs[doc] && KB.docs[doc].pfx) || doc[0]) + String(pg).padStart(2, "0");
   const circled = (n) => (n >= 1 && n <= 20 ? String.fromCharCode(0x2460 + n - 1) : String(n));
   function scrollToEl(e) { setTimeout(() => e.scrollIntoView({ behavior: "smooth", block: "start" }), 30); }
@@ -119,7 +120,7 @@
       figsHTML(s.figs, g) +
       `<div class="ans manual">${parasHTML(s.paras, faq)}</div>` +
       (s.links ? `<div class="links">${s.links.map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join("<br>")}</div>` : "") +
-      (s.doc === "support" ? "" : `<div class="acts"><button class="act" type="button" data-pages="${s.id}">マニュアルのページ全体を見る</button></div>`) +
+      (noPage(s) ? "" : `<div class="acts"><button class="act" type="button" data-pages="${s.id}">マニュアルのページ全体を見る</button></div>`) +
       relatedChips(s) +
       `<p class="help">${esc(KB.help)}</p>`;
     return c;
@@ -185,7 +186,7 @@
         (s.links ? `<div class="links">${s.links.map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join("<br>")}</div>` : "") +
         `<div class="acts">` +
         (k !== stripAt && s.figs.length ? `<button class="act" type="button" data-g-open="${g}">画面図を見る（${s.figs.length}枚）</button>` : "") +
-        `<button class="act" type="button" data-sec="${s.id}">${s.doc === "support" ? "くわしく見る" : "マニュアルの説明を読む"}</button></div></div>`;
+        `<button class="act" type="button" data-sec="${s.id}">${noPage(s) ? "くわしく見る" : "マニュアルの説明を読む"}</button></div></div>`;
     });
     const next = (res.next || []).slice(0, 3);
     if (next.length) h += `<div class="chips">${next.map((t) => `<button class="chip" type="button" data-q="${esc(t)}">${esc(t)}</button>`).join("")}</div>`;
@@ -228,6 +229,8 @@
       for (const b of qb) { const tf = d.vec.get(b); if (tf) sc += Math.log(1 + IDX.N / IDX.df.get(b)) * Math.log(1 + tf); }
       for (const k of d.kws) if (nq.includes(k)) sc += 2 + k.length * 0.9;
       if (d.s.group === "extra") sc *= 0.6;
+      if (d.s.unused) sc *= 0.3;
+      if (d.s.doc === "local") sc *= 1.3;
       if (sc > 0) out.push({ s: d.s, sc });
     }
     out.sort((a, b) => b.sc - a.sc);
@@ -381,7 +384,7 @@
       h += `<div class="toc-cat"><h3>${esc(c.name)}<small>${esc(c.desc)}</small></h3>`;
       for (const sid of c.secs) {
         const s = SEC[sid];
-        h += `<button class="toc-item" type="button" data-toc="${sid}"><span>${esc(s.title)}</span><span class="pg">${s.doc === "support" ? "公式" : "P." + s.p[0]}</span></button>`;
+        h += `<button class="toc-item" type="button" data-toc="${sid}"><span>${esc(s.title)}</span><span class="pg">${s.doc === "support" ? "公式" : s.doc === "local" ? "健康村" : "P." + s.p[0]}</span></button>`;
       }
       h += `</div>`;
     }
@@ -433,7 +436,7 @@
   window.yuiDebug = { search: (q) => search(q).map((r) => [r.s.id, r.s.title, Math.round(r.sc * 10) / 10]) };
 
   // ---------- start ----------
-  fetch("kb.json?v=7").then((r) => r.json()).then((kb) => {
+  fetch("kb.json?v=8").then((r) => r.json()).then((kb) => {
     KB = kb;
     ORDER = kb.secs.map((s) => s.id);
     for (const s of kb.secs) SEC[s.id] = s;

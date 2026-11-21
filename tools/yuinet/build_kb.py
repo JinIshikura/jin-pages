@@ -35,15 +35,17 @@ for s in secs_in:
             if m.group(1) not in ICONS:
                 raise SystemExit(f"unknown icon {m.group(1)} in {sid}")
             used_icons.add(m.group(1))
-    if sid not in cat_of:
+    if sid not in cat_of and sid not in C.UNUSED:
         raise SystemExit(f"section {sid} has no category")
     item = {
         "id": sid, "doc": s["doc"], "p": C.PAGES.get(sid, [s["page_start"], s["page_end"]]),
         "title": C.TITLES.get(sid, s["title"]), "crumb": s["crumb"],
-        "cat": cat_of[sid], "kw": C.KEYWORDS.get(sid, ""), "paras": paras, "figs": [f for f in s["figs"] if f not in C.DROP_FIGS],
+        "cat": cat_of.get(sid, "unused"), "kw": C.KEYWORDS.get(sid, ""), "paras": paras, "figs": [f for f in s["figs"] if f not in C.DROP_FIGS],
     }
     if sid in C.ADMIN:
         item["admin"] = True
+    if sid in C.UNUSED:
+        item["unused"] = True
     if sid == "g02a":
         item["links"] = [{"label": "インストールページを開く（開発元の公式ページ）", "url": C.INSTALL_URL}]
     secs.append(item)
@@ -91,7 +93,7 @@ for name, path in (("guide", "src/guide.pdf"), ("disaster", "src/disaster.pdf"))
 # ---- extra documents: web admin manuals and update notes (build2/extra.json) ----
 EXTRA_JSON = "build2/extra.json"
 docs = {k: dict(v) for k, v in C.DOCS.items()}
-docs["guide"]["pfx"] = "g"; docs["disaster"]["pfx"] = "d"; docs["support"]["pfx"] = "s"
+docs["guide"]["pfx"] = "g"; docs["disaster"]["pfx"] = "d"; docs["support"]["pfx"] = "s"; docs["local"]["pfx"] = "k"
 cats = [{"id": c["id"], "name": c["name"], "desc": c["desc"], "secs": c["secs"].split()} for c in C.CATS]
 if os.path.exists(EXTRA_JSON):
     X = json.load(open(EXTRA_JSON))
@@ -172,7 +174,7 @@ json.dump(kb, open(f"{OUT}/kb.json", "w"), ensure_ascii=False, separators=(",", 
 # AI context size estimate
 def ai_text(s):
     body = "\n".join(TOKEN.sub(lambda m: "［" + (icons[m.group(1)]["label"] or "アイコン") + "］", p) for p in s["paras"])
-    pg = "" if s["doc"] == "support" else f"P.{s['p'][0]}" + (f"-{s['p'][1]}" if s['p'][1] != s['p'][0] else "")
+    pg = "" if s["doc"] in ("support", "local") else f"P.{s['p'][0]}" + (f"-{s['p'][1]}" if s['p'][1] != s['p'][0] else "")
     return f"[{s['id']}] {docs[s['doc']]['name']} {pg} ／ {s['crumb']}（{s['title']}）\n{body}"
 ctx = "\n\n".join(ai_text(s) for s in secs if s.get("group") != "extra")
 print("extra chars", sum(len("".join(s["paras"])) for s in secs if s.get("group") == "extra"))
