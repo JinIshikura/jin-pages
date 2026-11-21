@@ -1,6 +1,8 @@
 name = "line-remind"
 main = "src/index.js"
 compatibility_date = "2026-11-01"
+# ダッシュボードで入れた変数をデプロイで消さない
+keep_vars = true
 
 # 毎分起動して、その分に予定されたメッセージがあれば送る
 [triggers]
