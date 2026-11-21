@@ -282,6 +282,10 @@
         while (chatHist.length > 2) chatHist.shift();
         log.appendChild(aiCard(res, q));
         scrollToEl(me);
+      } else if (res && res.reason === "off_topic") {
+        const c = el("div", "card", `<p style="margin:0">${esc(res.message || "このチャットでは、結ネットの使い方についての質問にだけお答えしています。")}</p>${catButtons()}`);
+        log.appendChild(c);
+        scrollToEl(me);
       } else {
         if (res && res.reason === "no_key") { aiState = "off"; updateModeNote(); }
         const note = res && res.reason === "busy" ? "いま混み合っているため、キーワードで探しました。" :

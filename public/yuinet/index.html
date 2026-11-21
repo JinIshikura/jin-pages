@@ -101,6 +101,7 @@ img{max-width:100%}
 #q:focus{outline:none;border-color:var(--blue)}
 #send{flex:0 0 auto;background:var(--blue);color:#fff;border:0;border-radius:12px;padding:0 18px;font-weight:800;font-size:17px;min-height:48px}
 #send:disabled{opacity:.5}
+.bar-note{max-width:var(--w);margin:6px auto 0;font-size:12.5px;line-height:1.5;color:var(--sub);text-align:center}
 
 /* viewer */
 .viewer{position:fixed;inset:0;z-index:50;background:#eef1f5;display:flex;flex-direction:column}
@@ -153,6 +154,7 @@ img{max-width:100%}
     <input id="q" type="text" enterkeyhint="send" maxlength="200" placeholder="例：パスワードを忘れた" aria-label="質問を入力">
     <button id="send" type="submit">送信</button>
   </div>
+  <p class="bar-note">AIの回答はまちがえることがあります。画面図やマニュアルとあわせてご確認ください。</p>
 </form>
 
 <div id="viewer" class="viewer" hidden role="dialog" aria-modal="true" aria-label="画面図の拡大表示">
@@ -180,6 +182,6 @@ img{max-width:100%}
   <div class="sheet-in" id="tocBody"></div>
 </div>
 
-<script src="app.js?v=5" defer></script>
+<script src="app.js?v=6" defer></script>
 </body>
 </html>
